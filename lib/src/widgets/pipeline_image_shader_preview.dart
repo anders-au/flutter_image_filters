@@ -1,6 +1,6 @@
 part of '../../flutter_image_filters.dart';
 
-class PipelineImageShaderPreview extends StatefulWidget {
+class PipelineImageShaderPreview extends StatelessWidget {
   final GroupShaderConfiguration configuration;
   final TextureSource texture;
   final BlendMode blendMode;
@@ -11,13 +11,6 @@ class PipelineImageShaderPreview extends StatefulWidget {
     required this.texture,
     this.blendMode = BlendMode.src,
   });
-
-  @override
-  State<PipelineImageShaderPreview> createState() => _PipelineImageShaderPreviewState();
-}
-
-class _PipelineImageShaderPreviewState extends State<PipelineImageShaderPreview> {
-  Image? _currentImage;
 
   @override
   Widget build(BuildContext context) {
@@ -31,18 +24,10 @@ class _PipelineImageShaderPreviewState extends State<PipelineImageShaderPreview>
           );
         }
         final image = snapshot.data;
-        if (image != null) {
-          _currentImage = image;
-          return RawImage(image: image);
+        if (image == null) {
+          return SizedBox.shrink();
         }
-        // While loading, show previous image if available, otherwise sized box
-        if (_currentImage != null) {
-          return RawImage(image: _currentImage!);
-        }
-        return SizedBox(
-          width: widget.texture.size.width,
-          height: widget.texture.size.height,
-        );
+        return RawImage(image: image);
       }),
     );
   }
@@ -51,13 +36,13 @@ class _PipelineImageShaderPreviewState extends State<PipelineImageShaderPreview>
     if (kDebugMode) {
       final watch = Stopwatch();
       watch.start();
-      final result = await widget.configuration.export(widget.texture, widget.texture.size);
+      final result = await configuration.export(texture, texture.size);
       debugPrint(
         'Exporting image took ${watch.elapsedMilliseconds} milliseconds',
       );
       return result;
     } else {
-      final result = await widget.configuration.export(widget.texture, widget.texture.size);
+      final result = await configuration.export(texture, texture.size);
       return result;
     }
   }

@@ -1,6 +1,6 @@
 part of '../../flutter_image_filters.dart';
 
-class PipelineImageShaderPreview extends StatelessWidget {
+class PipelineImageShaderPreview extends StatefulWidget {
   final GroupShaderConfiguration configuration;
   final TextureSource texture;
   final BlendMode blendMode;
@@ -11,6 +11,13 @@ class PipelineImageShaderPreview extends StatelessWidget {
     required this.texture,
     this.blendMode = BlendMode.src,
   });
+
+  @override
+  State<PipelineImageShaderPreview> createState() => _PipelineImageShaderPreviewState();
+}
+
+class _PipelineImageShaderPreviewState extends State<PipelineImageShaderPreview> {
+  Image? _currentImage;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +31,18 @@ class PipelineImageShaderPreview extends StatelessWidget {
           );
         }
         final image = snapshot.data;
-        if (image == null) {
-          return SizedBox.shrink();
+        if (image != null) {
+          _currentImage = image;
+          return RawImage(image: image);
         }
-        return RawImage(image: image);
+        // While loading, show previous image if available, otherwise sized box
+        if (_currentImage != null) {
+          return RawImage(image: _currentImage!);
+        }
+        return SizedBox(
+          width: widget.texture.size.width,
+          height: widget.texture.size.height,
+        );
       }),
     );
   }
@@ -36,13 +51,13 @@ class PipelineImageShaderPreview extends StatelessWidget {
     if (kDebugMode) {
       final watch = Stopwatch();
       watch.start();
-      final result = await configuration.export(texture, texture.size);
+      final result = await widget.configuration.export(widget.texture, widget.texture.size);
       debugPrint(
         'Exporting image took ${watch.elapsedMilliseconds} milliseconds',
       );
       return result;
     } else {
-      final result = await configuration.export(texture, texture.size);
+      final result = await widget.configuration.export(widget.texture, widget.texture.size);
       return result;
     }
   }

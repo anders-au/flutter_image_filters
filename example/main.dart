@@ -10,14 +10,14 @@ class PreviewPage extends StatefulWidget {
 
 class _PreviewPageState extends State<PreviewPage> {
   late TextureSource texture;
-  late BrightnessShaderConfiguration configuration;
+  late VignetteShaderConfiguration configuration;
   bool textureLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    configuration = BrightnessShaderConfiguration();
-    configuration.brightness = 0.5;
+    configuration = VignetteShaderConfiguration();
+    configuration.color = Colors.red;
     TextureSource.fromAsset('demo.jpeg')
         .then((value) => texture = value)
         .whenComplete(

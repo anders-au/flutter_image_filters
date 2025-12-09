@@ -54,6 +54,8 @@ additional_public_assets:
   - shaders/vignette.frag
   - shaders/white_balance.frag
   - shaders/zoom_blur.frag
+  - shaders/grain.frag
+  - shaders/softness.frag
 
 builders:
   flutter_image_filters_builder:

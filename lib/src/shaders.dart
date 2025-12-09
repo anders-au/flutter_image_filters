@@ -73,6 +73,10 @@ Map<Type, Future<FragmentProgram> Function()> _fragmentPrograms = {
       FragmentProgram.fromAsset('${_shadersRoot}shaders/halftone.frag'),
   HazeShaderConfiguration: () =>
       FragmentProgram.fromAsset('${_shadersRoot}shaders/haze.frag'),
+  GrainShaderConfiguration: () =>
+      FragmentProgram.fromAsset('${_shadersRoot}shaders/grain.frag'),
+  SoftnessShaderConfiguration: () =>
+      FragmentProgram.fromAsset('${_shadersRoot}shaders/softness.frag'),
   NoneShaderConfiguration: () =>
       FragmentProgram.fromAsset('${_shadersRoot}shaders/none.frag'),
 };

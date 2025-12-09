@@ -50,6 +50,8 @@ part 'src/configurations/vibrance.dart';
 part 'src/configurations/vignette.dart';
 part 'src/configurations/white_balance.dart';
 part 'src/configurations/zoom_blur.dart';
+part 'src/configurations/grain.dart';
+part 'src/configurations/softness.dart';
 part 'src/parameters.dart';
 part 'src/shaders.dart';
 part 'src/texture_source.dart';
@@ -104,6 +106,8 @@ class FlutterImageFilters {
     'Vignette': () => VignetteShaderConfiguration(),
     'White Balance': () => WhiteBalanceShaderConfiguration(),
     'Zoom Blur': () => ZoomBlurShaderConfiguration(),
+    'Grain': () => GrainShaderConfiguration(),
+    'Softness': () => SoftnessShaderConfiguration(),
   };
 
   static ShaderConfiguration? createFilter({required String displayName}) {

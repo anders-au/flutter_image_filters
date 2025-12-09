@@ -71,7 +71,7 @@ class ImageShaderPreview extends StatelessWidget {
         }
         final shaderProgram = configuration._internalProgram;
         if (shaderProgram == null) {
-          return loadingBuilder?.call(context) ?? const CircularProgressIndicator();
+          return loadingBuilder?.call(context) ?? const Center(child: CircularProgressIndicator());
         }
         if (boxFit == BoxFit.contain) {
           return AspectRatio(

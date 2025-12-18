@@ -113,15 +113,45 @@ class TextureSource {
       buffer,
       getTargetSize: (width, height) {
         final size = targetSize;
+        
+        // No size provided -> use original
         if (size == null) {
           return TargetImageSize(width: width, height: height);
         }
         final w = size.width;
         final h = size.height;
-        if (w == null || h == null) {
+
+        // Neither dimension provided -> use original
+        if (w == null && h == null) {
           return TargetImageSize(width: width, height: height);
         }
-        if (w >= width || h >= height) {
+
+        // Only width provided -> compute height preserving aspect ratio
+        if (w != null && h == null) {
+          if (w >= width) {
+            return TargetImageSize(width: width, height: height);
+          }
+          final scale = width / w;
+          return TargetImageSize(
+            width: w,
+            height: (height / scale).toInt(),
+          );
+        }
+
+        // Only height provided -> compute width preserving aspect ratio
+        if (h != null && w == null) {
+          if (h >= height) {
+            return TargetImageSize(width: width, height: height);
+          }
+          final scale = height / h;
+          return TargetImageSize(
+            width: (width / scale).toInt(),
+            height: h,
+          );
+        }
+
+        // Both provided -> preserve aspect ratio but avoid upscaling
+        if (w! >= width || h! >= height) {
           return TargetImageSize(width: width, height: height);
         }
         final scale = min(width / w, height / h);

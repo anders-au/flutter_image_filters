@@ -8,8 +8,15 @@ class ImageShaderPreview extends StatelessWidget {
   final bool isAntiAlias;
   final FilterQuality filterQuality;
   final bool willChange;
+  // Called while the shader is loading
+  // Falls back to a CircularProgressIndicator if not provided
   final WidgetBuilder? loadingBuilder;
+  // Called when an error occurs during shader loading
+  /// The error [Object] is passed as the second argument
   final Widget Function(BuildContext, Object?)? errorBuilder;
+  /// Called when the shader is successfully loaded
+  /// The loaded [Widget] is passed as the second argument
+  final Widget Function(BuildContext, Widget)? loadedBuilder;
 
   const ImageShaderPreview({
     super.key,
@@ -22,34 +29,18 @@ class ImageShaderPreview extends StatelessWidget {
     this.willChange = true,
     this.loadingBuilder,
     this.errorBuilder,
+    this.loadedBuilder,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    final cachedProgram = configuration._internalProgram;
-    if (cachedProgram != null) {
-      if (boxFit == BoxFit.contain) {
-        return AspectRatio(
-          aspectRatio: texture.aspectRatio,
-          child: CustomPaint(
-            size: texture.size,
-            willChange: willChange,
-            painter: ImageShaderPainter(
-              cachedProgram,
-              texture,
-              configuration,
-              blendMode: blendMode,
-              filterQuality: filterQuality,
-              isAntiAlias: isAntiAlias,
-            ),
-          ),
-        );
-      }
-      return SizedBox.expand(
+  Widget _buildLoadedWidget(FragmentProgram shaderProgram) {
+    if (boxFit == BoxFit.contain) {
+      return AspectRatio(
+        aspectRatio: texture.aspectRatio,
         child: CustomPaint(
+          size: texture.size,
           willChange: willChange,
           painter: ImageShaderPainter(
-            cachedProgram,
+            shaderProgram,
             texture,
             configuration,
             blendMode: blendMode,
@@ -58,6 +49,28 @@ class ImageShaderPreview extends StatelessWidget {
           ),
         ),
       );
+    }
+    return SizedBox.expand(
+      child: CustomPaint(
+        willChange: willChange,
+        painter: ImageShaderPainter(
+          shaderProgram,
+          texture,
+          configuration,
+          blendMode: blendMode,
+          filterQuality: filterQuality,
+          isAntiAlias: isAntiAlias,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cachedProgram = configuration._internalProgram;
+    if (cachedProgram != null) {
+      final loadedWidget = _buildLoadedWidget(cachedProgram);
+      return loadedBuilder?.call(context, loadedWidget) ?? loadedWidget;
     }
     return FutureBuilder<void>(
       future: Future.value(configuration.prepare()),
@@ -73,36 +86,8 @@ class ImageShaderPreview extends StatelessWidget {
         if (shaderProgram == null) {
           return loadingBuilder?.call(context) ?? const Center(child: CircularProgressIndicator());
         }
-        if (boxFit == BoxFit.contain) {
-          return AspectRatio(
-            aspectRatio: texture.aspectRatio,
-            child: CustomPaint(
-              willChange: willChange,
-              painter: ImageShaderPainter(
-                shaderProgram,
-                texture,
-                configuration,
-                blendMode: blendMode,
-                filterQuality: filterQuality,
-                isAntiAlias: isAntiAlias,
-              ),
-            ),
-          );
-        }
-
-        return SizedBox.expand(
-          child: CustomPaint(
-            willChange: willChange,
-            painter: ImageShaderPainter(
-              shaderProgram,
-              texture,
-              configuration,
-              blendMode: blendMode,
-              filterQuality: filterQuality,
-              isAntiAlias: isAntiAlias,
-            ),
-          ),
-        );
+        final loadedWidget = _buildLoadedWidget(shaderProgram);
+        return loadedBuilder?.call(context, loadedWidget) ?? loadedWidget;
       }),
     );
   }

@@ -129,6 +129,32 @@ class ShaderVec3Parameter extends Vector3Parameter {
   }
 }
 
+class ShaderVec4Parameter extends RectParameter {
+  final int _offset;
+
+  ShaderVec4Parameter(
+    super.name,
+    super.displayName,
+    super.value,
+    this._offset,
+  );
+
+  @override
+  List<double> get values => [value.left, value.top, value.right, value.bottom]; 
+
+  @override
+  void update(covariant ShaderConfiguration configuration) {
+    if (configuration is BunchShaderConfiguration) {
+      final conf = findByParameter(configuration);
+      if (conf != null) {
+        update(conf);
+      }
+    } else {
+      configuration._floats.setAll(_offset, values);
+      configuration._needRedraw = true;
+    }
+  }
+}
 class ShaderRectParameter extends RectParameter {
   final int _offset;
 

@@ -5,6 +5,7 @@ class PipelineImageShaderPreview extends StatelessWidget {
   final TextureSource texture;
   final BlendMode blendMode;
   final WidgetBuilder? loadingBuilder;
+  final Widget Function(BuildContext, Widget)? loadedBuilder;
   final Widget Function(BuildContext, Object?)? errorBuilder;
   final BoxFit boxFit;
   final FilterQuality filterQuality;
@@ -17,6 +18,7 @@ class PipelineImageShaderPreview extends StatelessWidget {
     this.blendMode = BlendMode.src,
     this.loadingBuilder,
     this.errorBuilder,
+    this.loadedBuilder,
     this.boxFit = BoxFit.contain,
     this.filterQuality = FilterQuality.none,
     this.isAntiAlias = true,
@@ -46,9 +48,17 @@ class PipelineImageShaderPreview extends StatelessWidget {
           isAntiAlias: isAntiAlias,
         );
 
+        Widget loadedWidget;
         if (boxFit == BoxFit.contain) {
-          return AspectRatio(
+          loadedWidget = AspectRatio(
             aspectRatio: texture.aspectRatio,
+            child: FittedBox(
+              fit: boxFit,
+              child: raw,
+            ),
+          );
+        } else {
+          loadedWidget = SizedBox.expand(
             child: FittedBox(
               fit: boxFit,
               child: raw,
@@ -56,12 +66,7 @@ class PipelineImageShaderPreview extends StatelessWidget {
           );
         }
 
-        return SizedBox.expand(
-          child: FittedBox(
-            fit: boxFit,
-            child: raw,
-          ),
-        );
+        return loadedBuilder?.call(context, loadedWidget) ?? loadedWidget;
       }),
     );
   }

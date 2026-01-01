@@ -105,6 +105,54 @@ class ShaderPointParameter extends PointParameter {
   }
 }
 
+class ShaderVec3Parameter extends Vector3Parameter {
+  final int _offset;
+
+  ShaderVec3Parameter(
+    super.name,
+    super.displayName,
+    super.value,
+    this._offset,
+  );
+
+  @override
+  void update(covariant ShaderConfiguration configuration) {
+    if (configuration is BunchShaderConfiguration) {
+      final conf = findByParameter(configuration);
+      if (conf != null) {
+        update(conf);
+      }
+    } else {
+      configuration._floats.setAll(_offset, values);
+      configuration._needRedraw = true;
+    }
+  }
+}
+
+class ShaderRectParameter extends RectParameter {
+  final int _offset;
+
+  ShaderRectParameter(
+    super.name,
+    super.displayName,
+    super.value,
+    this._offset,
+  );
+
+  @override
+  void update(covariant ShaderConfiguration configuration) {
+    if (configuration is BunchShaderConfiguration) {
+      final conf = findByParameter(configuration);
+      if (conf != null) {
+        update(conf);
+      }
+    } else {
+      configuration._floats.setAll(_offset, values);
+      configuration._needRedraw = true;
+    }
+  }
+}
+
 class ShaderMatrix4Parameter extends Mat4Parameter {
   final int _offset;
 

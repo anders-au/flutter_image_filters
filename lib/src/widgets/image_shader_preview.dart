@@ -8,6 +8,7 @@ class ImageShaderPreview extends StatelessWidget {
   final bool isAntiAlias;
   final FilterQuality filterQuality;
   final bool willChange;
+  final AlignmentGeometry alignment;
   // Called while the shader is loading
   // Falls back to a CircularProgressIndicator if not provided
   final WidgetBuilder? loadingBuilder;
@@ -23,21 +24,22 @@ class ImageShaderPreview extends StatelessWidget {
     required this.configuration,
     required this.texture,
     this.blendMode = BlendMode.src,
-    this.boxFit = BoxFit.contain,
+    this.boxFit = BoxFit.cover,
     this.filterQuality = FilterQuality.none,
     this.isAntiAlias = true,
     this.willChange = true,
+    this.alignment = Alignment.center,
     this.loadingBuilder,
     this.errorBuilder,
     this.loadedBuilder,
   });
 
   Widget _buildLoadedWidget(FragmentProgram shaderProgram) {
-    if (boxFit == BoxFit.contain) {
-      return AspectRatio(
-        aspectRatio: texture.aspectRatio,
+    
+ 
+    return ClipRect(
+      child: SizedBox.expand(
         child: CustomPaint(
-          size: texture.size,
           willChange: willChange,
           painter: ImageShaderPainter(
             shaderProgram,
@@ -46,20 +48,9 @@ class ImageShaderPreview extends StatelessWidget {
             blendMode: blendMode,
             filterQuality: filterQuality,
             isAntiAlias: isAntiAlias,
+            boxFit: boxFit,
+            alignment: alignment,
           ),
-        ),
-      );
-    }
-    return SizedBox.expand(
-      child: CustomPaint(
-        willChange: willChange,
-        painter: ImageShaderPainter(
-          shaderProgram,
-          texture,
-          configuration,
-          blendMode: blendMode,
-          filterQuality: filterQuality,
-          isAntiAlias: isAntiAlias,
         ),
       ),
     );

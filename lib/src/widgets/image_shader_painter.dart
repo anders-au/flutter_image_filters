@@ -83,7 +83,8 @@ class ImageShaderPainter extends CustomPainter {
         
         canvas.save();
         canvas.clipRect(Rect.fromLTWH(0, 0, size.width, size.height));
-        canvas.drawRect(dstRect, paint);
+        canvas.translate(dstRect.left, dstRect.top);
+        canvas.drawRect(Rect.fromLTWH(0, 0, dstRect.width, dstRect.height), paint);
         canvas.restore();
       } else {
         // Default: just fill the entire canvas

@@ -29,7 +29,9 @@ abstract class ShaderConfiguration extends FilterConfiguration {
   ///
   /// This method is called when the shader program needs to be updated
   @override
-  FutureOr<void> update() {}
+  FutureOr<void> update() {
+    _needRedraw = true;
+  }
 
   /// Returns the readiness of the shader program
   @override
